@@ -6,7 +6,7 @@
 # measures data every 5 s second, displays the data and also attemptsa to send to
 # a web service (seperate project)
 # Author:  Andreas Bauer
-# e-mail:  fastberrypi@gmail.com
+# e-mail:  andreaslbauer@gmail.com
 # Last update: 4/21/2017
 
 #import os and time modules
