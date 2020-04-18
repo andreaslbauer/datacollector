@@ -24,7 +24,7 @@ from adcsensor import ADCService
 #dbfilename = "/tmp/data.db"
 dbfilename = "/opt/pimon/data.db"
 lastRowId = 1
-timeBetweenSensorReads = 120
+timeBetweenSensorReads = 60
 
 # create connection to our db
 def createConnection(dbFileName):
