@@ -24,7 +24,7 @@ from adcsensor import ADCService
 #dbfilename = "/tmp/data.db"
 dbfilename = "/opt/pimon/data.db"
 lastRowId = 1
-timeBetweenSensorReads = 180
+timeBetweenSensorReads = 60
 
 # create connection to our db
 def createConnection(dbFileName):
@@ -106,13 +106,13 @@ def main() :
     logging.info("SQLITE Database file is %s", dbfilename);
 
     try:
-        hostname = socket.gethostname()
-        externalip = get('https://api.ipify.org').text
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(('8.8.8.8', 1))  # connect() for UDP doesn't send packets
-        localipaddress = s.getsockname()[0]
-        logging.info("Hostname is %s", hostname)
-        logging.info("Local IP is %s and external IP is %s", localipaddress, externalip)
+        #hostname = socket.gethostname()
+        #externalip = get('https://api.ipify.org').text
+        #s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        #s.connect(('8.8.8.8', 1))  # connect() for UDP doesn't send packets
+        #localipaddress = s.getsockname()[0]
+        #logging.info("Hostname is %s", hostname)
+        #logging.info("Local IP is %s and external IP is %s", localipaddress, externalip)
 
     except Exception as e:
         logging.exception("Exception occurred")

@@ -27,12 +27,12 @@ adc = Adafruit_ADS1x15.ADS1115()
 # present the gain for each channel and compute the factor needed to compute
 # the voltage value
 GAINFACTOR = [4.096, 2.048, 1.024, 0.521, 0.256]
-GAIN = [1, 4, 1, 1]
+GAIN = [1, 4, 1, 4]
 VOLTAGEFACTOR = [4.096 / (2.0**15)]*4
 for i in range(4):
     # note: we need to offset by -1 when we look up the GAIN index
     VOLTAGEFACTOR[i] = GAINFACTOR[GAIN[i] - 1] / (2.0**15)
-CALIBRATIONFACTOR = [14.3 / 1.04, -200, 14.3 / 1.04, 1]
+CALIBRATIONFACTOR = [14.3 / 1.04, -200, 14.3 / 1.04, -100]
 
 #
 # the class ADCChannel is used to keep static information about each adc channel
