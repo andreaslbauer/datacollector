@@ -26,7 +26,7 @@ adc = Adafruit_ADS1x15.ADS1115()
 
 # present the gain for each channel and compute the factor needed to compute
 # the voltage value
-GAINFACTOR = [4.096, 2.048, 1.024, 0.521, 0.256]
+GAINFACTOR = [4.096, 2.048, 1.024, 0.512, 0.256]
 GAIN = [1, 4, 1, 4]
 VOLTAGEFACTOR = [4.096 / (2.0**15)]*4
 for i in range(4):
