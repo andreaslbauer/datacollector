@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# 12
+# 123
 # for database debugging:
 # sqlite3 /tmp/data.db
 # sqlite> select * from datapoints;
