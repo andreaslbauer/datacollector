@@ -31,7 +31,7 @@ VOLTAGEFACTOR = [4.096 / (2.0 ** 15)] * 4
 for i in range(4):
     # note: we need to offset by -1 when we look up the GAIN index
     VOLTAGEFACTOR[i] = (4.096 / GAIN[i]) / (2.0 ** 15)
-CALIBRATIONFACTOR = [14.3 / 1.04, -1, 14.3 / 1.04, -1]
+CALIBRATIONFACTOR = [14.3 / 1.04, -150, 14.3 / 1.04, -150]
 
 
 #
