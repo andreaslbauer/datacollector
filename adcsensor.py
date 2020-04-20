@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*- import os import time
 
 #
-# Python 2 Program to use temperature sensors DS18B20 on Raspberry to measure,
-# temperature values.  The program automatically discovers all sensors on W1.  It
-# measures data every 5 s second, displays the data and also attemptsa to send to
-# a web service (seperate project)
+# Python 3 modile to read values from ADC1115 Analog Digital Converter
 # Author:  Andreas Bauer
 # e-mail:  fastberrypi@gmail.com
 # Last update: 4/21/2017
