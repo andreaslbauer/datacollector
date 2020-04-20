@@ -1,21 +1,20 @@
 # -*- coding: utf-8 -*- import os import time
 
 #
-# Python 3 Program to use temperature sensors DS18B20 on Raspberry to measure,
+# Python 2 Program to use temperature sensors DS18B20 on Raspberry to measure,
 # temperature values.  The program automatically discovers all sensors on W1.  It
 # measures data every 5 s second, displays the data and also attemptsa to send to
 # a web service (seperate project)
 # Author:  Andreas Bauer
-# e-mail:  andreaslbauer@gmail.com
+# e-mail:  fastberrypi@gmail.com
 # Last update: 4/21/2017
 
-#import os and time modules
+# import os and time modules
 import os
 import time
 import datetime
 import logging
 import Adafruit_ADS1x15
-
 
 #
 # some global variables
@@ -27,12 +26,13 @@ adc = Adafruit_ADS1x15.ADS1115()
 # present the gain for each channel and compute the factor needed to compute
 # the voltage value
 GAINFACTOR = [4.096, 2.048, 1.024, 0.512, 0.256]
-GAIN = [1, 4, 1, 4]
-VOLTAGEFACTOR = [4.096 / (2.0**15)]*4
+GAIN = [1, 8, 1, 8]
+VOLTAGEFACTOR = [4.096 / (2.0 ** 15)] * 4
 for i in range(4):
     # note: we need to offset by -1 when we look up the GAIN index
-    VOLTAGEFACTOR[i] = GAINFACTOR[GAIN[i] - 1] / (2.0**15)
-CALIBRATIONFACTOR = [14.3 / 1.04, -200, 14.3 / 1.04, -100]
+    VOLTAGEFACTOR[i] = (4.096 / GAIN[i]) / (2.0 ** 15)
+CALIBRATIONFACTOR = [14.3 / 1.04, -1, 14.3 / 1.04, 1]
+
 
 #
 # the class ADCChannel is used to keep static information about each adc channel
@@ -49,21 +49,21 @@ class ADCChannel:
     lastRead = ''
 
     # constructor; it initializes all data members per passed parameters
-    def __init__ (self, name, channelId, gain, calibrationfactor):
+    def __init__(self, name, channelId, gain, gainfactor, calibrationfactor):
         self.name = name
         self.channelId = channelId
-        self.gain = 1
-        self.gainfactor = (GAINFACTOR[gain - 1] / (2.0**15)) * calibrationfactor
+        self.gain = gain
+        self.gainfactor = gainfactor * calibrationfactor
         self.calibrationfactor = calibrationfactor
         self.value = 0.0
         self.lastRead = ''
-        logging.info("Set up ADC1115 channel %s with gainfactor %s",
-                     self.name, self.gainfactor)
+        logging.debug("Set up ADC1115 channel %s with gainfactor %s",
+                      self.name, self.gainfactor)
 
     # print instance data.  Used for debugging and diagnosis purposes
     def dump(self):
         print("Name: %s Channel Id: %s Value: %3.2f Last Read: %s" \
-        % (self.name, self.channelId, self.value, self.lastRead))
+              % (self.name, self.channelId, self.value, self.lastRead))
 
     # read the sensor
     def read(self):
@@ -72,8 +72,10 @@ class ADCChannel:
         self.value = value
         dateValue = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.lastRead = dateValue
-        logging.info("Read ADC Sensor %i - Raw Value: %i  Calibrated Value: %s", self.channelId, rawvalue, value)
+        logging.debug("ADC Sensor %i - Gain: %i Raw Value: %i  Calibrated Value: %s",
+                      self.channelId, self.gain, rawvalue, value)
         return value
+
 
 #
 # class to implement service that manages all sensors
@@ -100,8 +102,8 @@ class ADCService:
 
         # create an ADC Channel object for the 4 channels
         for i in range(4):
-            self.channels[i] = ADCChannel("Channel " + str(i), i, GAIN[i], CALIBRATIONFACTOR[i])
-        
+            self.channels[i] = ADCChannel("Channel " + str(i), i, GAIN[i], VOLTAGEFACTOR[i], CALIBRATIONFACTOR[i])
+
     # read the sensors
 
     def readChannels(self):
@@ -115,8 +117,3 @@ class ADCService:
             values.append(channel.value)
 
         return values
-
-
-
-
-
