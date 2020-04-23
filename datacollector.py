@@ -1,11 +1,7 @@
 #!/usr/bin/python3
 
-# 123
-# for database debugging:
-# sqlite3 /tmp/data.db
-# sqlite> select * from datapoints;
-# sqlite> drop table datapoints;
-
+# Python3 code to read data from Analog Digital Converter 1115 and store values in class structure
+#
 
 # logging facility: https://realpython.com/python-logging/
 import logging
