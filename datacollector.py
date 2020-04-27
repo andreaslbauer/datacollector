@@ -146,7 +146,6 @@ def main() :
         # keep running until ctrl+C
         while True:
 
-
             # read temperature values
             temperatureService.readSensors()
             now = datetime.datetime.now()
