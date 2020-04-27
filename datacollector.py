@@ -145,7 +145,8 @@ def main() :
 
         # keep running until ctrl+C
         while True:
-            
+
+
             # read temperature values
             temperatureService.readSensors()
             now = datetime.datetime.now()
@@ -153,15 +154,16 @@ def main() :
             nowDate = now.strftime("%Y-%m-%d")
             nowTime = now.strftime("%H:%M:%S")
 
-            values = temperatureService.getValues()
-            sensorId = 1
-            for value in values:
-                row = (lastRowId + 1, sensorId, nowDate, nowTime, nowDateTime,
-                       value)
-                lastRowId = insertRow(mydb, row)
-                sensorId = sensorId + 1
-
             try:
+
+                values = temperatureService.getValues()
+                sensorId = 1
+                for value in values:
+                    row = (lastRowId + 1, sensorId, nowDate, nowTime, nowDateTime,
+                           value)
+                    lastRowId = insertRow(mydb, row)
+                    sensorId = sensorId + 1
+
                 # readvoltage values
                 voltageService.readChannels()
                 now = datetime.datetime.now()
