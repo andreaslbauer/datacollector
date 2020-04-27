@@ -161,25 +161,29 @@ def main() :
                 lastRowId = insertRow(mydb, row)
                 sensorId = sensorId + 1
 
+            try:
+                # readvoltage values
+                voltageService.readChannels()
+                now = datetime.datetime.now()
+                nowDateTime = str(now)
+                nowDate = now.strftime("%Y-%m-%d")
+                nowTime = now.strftime("%H:%M:%S")
 
-            # readvoltage values
-            voltageService.readChannels()
-            now = datetime.datetime.now()
-            nowDateTime = str(now)
-            nowDate = now.strftime("%Y-%m-%d")
-            nowTime = now.strftime("%H:%M:%S")
+                values = voltageService.getValues()
+                for value in values:
+                    row = (lastRowId + 1, sensorId, nowDate, nowTime, nowDateTime,
+                           value)
+                    lastRowId = insertRow(mydb, row)
+                    sensorId = sensorId + 1
 
-            values = voltageService.getValues()
-            for value in values:
-                row = (lastRowId + 1, sensorId, nowDate, nowTime, nowDateTime,
-                       value)
-                lastRowId = insertRow(mydb, row)
-                sensorId = sensorId + 1            
-            
-            # commit the DB write          
+                # commit the DB write
 
-            mydb.commit()
-            time.sleep(timeBetweenSensorReads)
+                mydb.commit()
+                time.sleep(timeBetweenSensorReads)
+
+            except Exception as e:
+                logging.exception("Exception while reading data and writing to DB")
+                logging.error("Unable to write data row")
 
         mydb.close()
 
