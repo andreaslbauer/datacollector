@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Python3 code to read data from Analog Digital Converter 1115 and store values in class structure
+# Python3 code to read data from Analog Digital Converter 1115 and temperature sensos 1802 and store values in class structure
 #
 
 # logging facility: https://realpython.com/python-logging/
