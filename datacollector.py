@@ -67,7 +67,7 @@ def insertRow(mydb, row):
     try:
         cursor = mydb.cursor()
         cursor.execute(sql, row)
-        logging.info("Insert %s", row)
+        logging.debug("Insert %s", row)
         return cursor.lastrowid
 
     except Error as e:
