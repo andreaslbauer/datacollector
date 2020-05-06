@@ -17,6 +17,7 @@ import datetime
 from thermosensor import TemperatureService
 from adc import ADCService
 from lcd1602 import LCD
+import relaiscontrol
 
 # dbfilename = "/tmp/data.db"
 dbfilename = "/opt/pimon/data.db"
@@ -168,6 +169,21 @@ def main():
                            value)
                     lastRowId = insertRow(mydb, row)
                     sensorId = sensorId + 1
+
+                # control relais based on temperature
+                if values[0] > 85:
+                    relaiscontrol.RelaisOn(0)
+                    relaiscontrol.RelaisOn(1)
+                else:
+                    relaiscontrol.RelaisOff(0)
+                    relaiscontrol.RelaisOff(1)
+
+                if values[1] > 85:
+                    relaiscontrol.RelaisOn(2)
+                    relaiscontrol.RelaisOn(3)
+                else:
+                    relaiscontrol.RelaisOff(2)
+                    relaiscontrol.RelaisOff(3)
 
                 # write to LCD
                 lcd.text("At: " + nowTime, LCD.LCD_LINE_1)
