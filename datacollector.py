@@ -22,7 +22,7 @@ import relaiscontrol
 # dbfilename = "/tmp/data.db"
 dbfilename = "/opt/pimon/data.db"
 lastRowId = 1
-timeBetweenSensorReads = 12
+timeBetweenSensorReads = 30
 lcd = LCD()
 
 
