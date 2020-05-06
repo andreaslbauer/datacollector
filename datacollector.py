@@ -21,7 +21,7 @@ from lcd1602 import LCD
 # dbfilename = "/tmp/data.db"
 dbfilename = "/opt/pimon/data.db"
 lastRowId = 1
-timeBetweenSensorReads = 8
+timeBetweenSensorReads = 60
 lcd = LCD()
 
 
