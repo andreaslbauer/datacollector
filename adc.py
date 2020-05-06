@@ -19,7 +19,7 @@ class ADCService:
     ads1 = ADS.ADS1115(i2c, address=0x48)
     ads2 = ADS.ADS1115(i2c, address=0x49)
 
-    adjustmentfactors = [1.59 / 0.144, 1.59 / 0.144, 1, 1]
+    adjustmentfactors = [1.59 / 0.144, 1.59 / 0.144, -1, 1]
     channels = [AnalogIn(ads1, ADS.P0, ADS.P1),
                 AnalogIn(ads1, ADS.P2, ADS.P3),
                 AnalogIn(ads2, ADS.P0, ADS.P1),
