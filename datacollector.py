@@ -15,7 +15,7 @@ import socket
 from requests import get
 import datetime
 from thermosensor import TemperatureService
-from adc import ADCService
+# from adc import ADCService
 from lcd1602 import LCD
 import relaiscontrol
 
@@ -145,58 +145,62 @@ def main():
         logging.info("Data points in table: %d", lastRowId)
 
         # create a temperature service instance
-        temperatureService = TemperatureService()
+        temperatureService = None
+
+        try:
+            temperatureService = TemperatureService()
+
+        except Error as e:
+            logging.exception("Exception occurred")
+            logging.error("Unable to create temperature service")
 
         # create a voltage service instance
-        voltageService = ADCService()
+        voltageService = None
+
+        try:
+            voltageService = ADCService()
+
+        except Exception as e:
+            logging.exception("Exception occurred")
+            logging.error("Unable to create ADC service")
 
         # keep running until ctrl+C
         while True:
 
             # read temperature values
-            temperatureService.readSensors()
-            now = datetime.datetime.now()
-            nowDateTime = str(now)
-            nowDate = now.strftime("%Y-%m-%d")
-            nowTime = now.strftime("%H:%M:%S")
-
-            try:
-
-                values = temperatureService.getValues()
-                sensorId = 1
-                for value in values:
-                    row = (lastRowId + 1, sensorId, nowDate, nowTime, nowDateTime,
-                           value)
-                    lastRowId = insertRow(mydb, row)
-                    sensorId = sensorId + 1
-
-                # control relais based on temperature
-                if values[0] > 85:
-                    relaiscontrol.RelaisOn(0)
-                    relaiscontrol.RelaisOn(1)
-                else:
-                    relaiscontrol.RelaisOff(0)
-                    relaiscontrol.RelaisOff(1)
-
-                if values[1] > 85:
-                    relaiscontrol.RelaisOn(2)
-                    relaiscontrol.RelaisOn(3)
-                else:
-                    relaiscontrol.RelaisOff(2)
-                    relaiscontrol.RelaisOff(3)
-
-                # write to LCD
-                lcd.text("At: " + nowTime, LCD.LCD_LINE_1)
-                lcdstr1 = "T: "
-                for value in values:
-                    lcdstr1 = lcdstr1 + "{:.2f}".format(value) + " "
-
-                # readvoltage values
+            if (temperatureService != None):
+                temperatureService.readSensors()
                 now = datetime.datetime.now()
                 nowDateTime = str(now)
                 nowDate = now.strftime("%Y-%m-%d")
                 nowTime = now.strftime("%H:%M:%S")
 
+                try:
+
+                    values = temperatureService.getValues()
+                    sensorId = 1
+                    for value in values:
+                        row = (lastRowId + 1, sensorId, nowDate, nowTime, nowDateTime,
+                               value)
+                        lastRowId = insertRow(mydb, row)
+                        sensorId = sensorId + 1
+                except Error as e:
+                    logging.exception("Exception occurred")
+                    logging.error("Unable to read temperature")
+
+                    # write to LCD
+            lcd.text("At: " + nowTime, LCD.LCD_LINE_1)
+            lcdstr1 = "T: "
+            for value in values:
+                lcdstr1 = lcdstr1 + "{:.2f}".format(value) + " "
+
+            # readvoltage values
+            now = datetime.datetime.now()
+            nowDateTime = str(now)
+            nowDate = now.strftime("%Y-%m-%d")
+            nowTime = now.strftime("%H:%M:%S")
+
+            if (voltageService != None):
                 values = voltageService.getValues()
                 for value in values:
                     row = (lastRowId + 1, sensorId, nowDate, nowTime, nowDateTime,
@@ -204,31 +208,30 @@ def main():
                     lastRowId = insertRow(mydb, row)
                     sensorId = sensorId + 1
 
-                # commit the DB write
-                mydb.commit()
+            # commit the DB write
+            mydb.commit()
 
-                # build LCD display strings
-                lcdstr2 = ""
-                lcdstr3 = ""
-                try:
+            # build LCD display strings
+            lcdstr2 = ""
+            lcdstr3 = ""
+            try:
+                if (len(values) > 1):
                     lcdstr2 = "{:.2f}V".format(values[0]) + " {:.2f}V".format(values[1])
+
+                if (len(values) > 3):
                     lcdstr3 = "{:.2f}A".format(values[2]) + " {:.2f}A".format(values[3])
 
-                except Exception as e:
-                    logging.exception("Exception while building LCD display strings")
-
-                lcd.text(lcdstr1, LCD.LCD_LINE_2)
-                time.sleep(timeBetweenSensorReads / 3)
-                lcd.text(lcdstr1, LCD.LCD_LINE_1)
-                lcd.text(lcdstr2, LCD.LCD_LINE_2)
-                time.sleep(timeBetweenSensorReads / 3)
-                lcd.text(lcdstr2, LCD.LCD_LINE_1)
-                lcd.text(lcdstr3, LCD.LCD_LINE_2)
-                time.sleep(timeBetweenSensorReads / 3)
-
             except Exception as e:
-                logging.exception("Exception while reading data and writing to DB")
-                logging.error("Unable to write data row")
+                logging.exception("Exception while building LCD display strings")
+
+            lcd.text(lcdstr1, LCD.LCD_LINE_2)
+            time.sleep(timeBetweenSensorReads / 3)
+            lcd.text(lcdstr1, LCD.LCD_LINE_1)
+            lcd.text(lcdstr2, LCD.LCD_LINE_2)
+            time.sleep(timeBetweenSensorReads / 3)
+            lcd.text(lcdstr2, LCD.LCD_LINE_1)
+            lcd.text(lcdstr3, LCD.LCD_LINE_2)
+            time.sleep(timeBetweenSensorReads / 3)
 
         mydb.close()
 
