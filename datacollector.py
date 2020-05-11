@@ -15,14 +15,14 @@ import socket
 from requests import get
 import datetime
 from thermosensor import TemperatureService
-# from adc import ADCService
+from adc import ADCService
 from lcd1602 import LCD
 import relaiscontrol
 
 # dbfilename = "/tmp/data.db"
 dbfilename = "/home/pi/pimon/data.db"
 lastRowId = 1
-timeBetweenSensorReads = 30
+timeBetweenSensorReads = 9
 lcd = LCD()
 
 
