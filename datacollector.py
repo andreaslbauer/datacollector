@@ -20,7 +20,7 @@ from lcd1602 import LCD
 import relaiscontrol
 
 # dbfilename = "/tmp/data.db"
-dbfilename = "/opt/pimon/data.db"
+dbfilename = "/home/pi/pimon/data.db"
 lastRowId = 1
 timeBetweenSensorReads = 30
 lcd = LCD()
@@ -163,13 +163,13 @@ def main():
 
         try:
             voltageService = ADCService()
-            lcd.text("ADC Service Created", LCD.LCD_LINE_2)
+            lcd.text("ADC Service Created", LCD.LCD_LINE_1)
             time.sleep(3)
 
         except Exception as e:
             logging.exception("Exception occurred")
             logging.error("Unable to create ADC service")
-            lcd.text("ADC Service Failed", LCD.LCD_LINE_2)
+            lcd.text("ADC Service Failed", LCD.LCD_LINE_1)
             time.sleep(3)
 
         # keep running until ctrl+C
@@ -255,5 +255,6 @@ if __name__ == '__main__':
     except Exception as e:
         logging.exception("Exception occurred in main")
 
+    lcd.text("Data Coll Exit", LCD.LCD_LINE_1)
     logging.info("Data Collector has terminated")
 
