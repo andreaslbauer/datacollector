@@ -108,6 +108,7 @@ def main():
     logging.info("SQLITE Database file is %s", dbfilename);
     lcd.text("Data Collector", LCD.LCD_LINE_1)
 
+    localipaddress = "IP: Unknown"
     try:
         hostname = socket.gethostname()
         externalip = get('https://api.ipify.org').text
@@ -192,6 +193,7 @@ def main():
                                value)
                         lastRowId = insertRow(mydb, row)
                         sensorId = sensorId + 1
+
                 except Error as e:
                     logging.exception("Exception occurred")
                     logging.error("Unable to read temperature")
@@ -208,6 +210,7 @@ def main():
             nowDate = now.strftime("%Y-%m-%d")
             nowTime = now.strftime("%H:%M:%S")
 
+            values = []
             if (voltageService != None):
                 values = voltageService.getValues()
                 for value in values:
@@ -220,8 +223,8 @@ def main():
             mydb.commit()
 
             # build LCD display strings
-            lcdstr2 = ""
-            lcdstr3 = ""
+            lcdstr2 = localipaddress
+            lcdstr3 = lcdstr1
             try:
                 if (len(values) > 1):
                     lcdstr2 = "{:.2f}V".format(values[0]) + " {:.2f}V".format(values[1])
