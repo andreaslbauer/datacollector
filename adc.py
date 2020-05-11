@@ -15,9 +15,17 @@ class ADCService:
 
     # the class data
     # list of all ADC channels
+    ads1 = None
+    ads2 = None
 
-    ads1 = ADS.ADS1115(i2c, address=0x48)
-    ads2 = ADS.ADS1115(i2c, address=0x49)
+    try:
+
+        ads1 = ADS.ADS1115(i2c, address=0x48)
+        ads2 = ADS.ADS1115(i2c, address=0x49)
+
+    except Exception as e:
+        logging.exception("Exception occurred")
+        logging.error("Unable to get ADC")
 
     adjustmentfactors = [1.59 / 0.144, 1.59 / 0.144, -1, 1]
     channels = [AnalogIn(ads1, ADS.P0, ADS.P1),
