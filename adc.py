@@ -19,23 +19,25 @@ class ADCService:
     ads1 = None
     ads2 = None
 
-    try:
-        ads1 = ADS.ADS1115(i2c, address=0x48)
-        ads2 = ADS.ADS1115(i2c, address=0x49)
-
-    except Exception as e:
-        logging.exception("Exception occurred")
-        logging.error("Unable to get ADC")
+    channels = []
 
     adjustmentfactors = [1.59 / 0.144, 1.59 / 0.144, -1, 1]
+
+    # constructor; it initializes all data members per passed parameters
+    def __init__(self):
+        try:
+            ads1 = ADS.ADS1115(i2c, address=0x48)
+            ads2 = ADS.ADS1115(i2c, address=0x49)
+
+        except Exception as e:
+            logging.exception("Exception occurred")
+            logging.error("Unable to get ADC")
+
     channels = [AnalogIn(ads1, ADS.P0, ADS.P1),
                 AnalogIn(ads1, ADS.P2, ADS.P3),
                 AnalogIn(ads2, ADS.P0, ADS.P1),
                 AnalogIn(ads2, ADS.P2, ADS.P3)]
 
-    # constructor; it initializes all data members per passed parameters
-    def __init__(self):
-        pass
 
     # get the measured values
     def getValues(self):
