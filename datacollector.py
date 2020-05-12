@@ -219,8 +219,8 @@ def main():
                                value)
                         lastRowId = insertRow(mydb, row)
                         sensorId = sensorId + 1
-            except:
-                except Error as e:
+
+            except Error as e:
                     logging.exception("Exception occurred")
                     logging.error("Unable to read voltage")
 
