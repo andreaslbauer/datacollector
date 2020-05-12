@@ -29,15 +29,14 @@ class ADCService:
             ads1 = ADS.ADS1115(i2c, address=0x48)
             ads2 = ADS.ADS1115(i2c, address=0x49)
 
+            channels = [AnalogIn(ads1, ADS.P0, ADS.P1),
+                        AnalogIn(ads1, ADS.P2, ADS.P3),
+                        AnalogIn(ads2, ADS.P0, ADS.P1),
+                        AnalogIn(ads2, ADS.P2, ADS.P3)]
+
         except Exception as e:
             logging.exception("Exception occurred")
             logging.error("Unable to get ADC")
-
-    channels = [AnalogIn(ads1, ADS.P0, ADS.P1),
-                AnalogIn(ads1, ADS.P2, ADS.P3),
-                AnalogIn(ads2, ADS.P0, ADS.P1),
-                AnalogIn(ads2, ADS.P2, ADS.P3)]
-
 
     # get the measured values
     def getValues(self):
