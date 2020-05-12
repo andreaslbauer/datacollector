@@ -144,6 +144,7 @@ def main():
         # insert some values
         lastRowId = countRows(mydb)
         logging.info("Data points in table: %d", lastRowId)
+        rowcount = lastRowId
 
         # create a temperature service instance
         temperatureService = None
@@ -193,6 +194,7 @@ def main():
                                value)
                         lastRowId = insertRow(mydb, row)
                         sensorId = sensorId + 1
+                        rowcount = rowcount + 1
 
                 except Error as e:
                     logging.exception("Exception occurred")
@@ -219,6 +221,7 @@ def main():
                                value)
                         lastRowId = insertRow(mydb, row)
                         sensorId = sensorId + 1
+                        rowcount = rowcount + 1
 
             except Error as e:
                     logging.exception("Exception occurred")
@@ -241,13 +244,15 @@ def main():
                 logging.exception("Exception while building LCD display strings")
 
             lcd.text(lcdstr1, LCD.LCD_LINE_2)
-            time.sleep(timeBetweenSensorReads / 3)
+            time.sleep(timeBetweenSensorReads / 4)
             lcd.text(lcdstr1, LCD.LCD_LINE_1)
             lcd.text(lcdstr2, LCD.LCD_LINE_2)
-            time.sleep(timeBetweenSensorReads / 3)
+            time.sleep(timeBetweenSensorReads / 4)
             lcd.text(lcdstr2, LCD.LCD_LINE_1)
             lcd.text(lcdstr3, LCD.LCD_LINE_2)
-            time.sleep(timeBetweenSensorReads / 3)
+            time.sleep(timeBetweenSensorReads / 4)
+            lcd.text(localipaddress, LCD.LCD_LINE_1)
+            lcd.text("Rows:" + str(rowcount), LCD.LCD_LINE_2)
 
         mydb.close()
 
