@@ -211,13 +211,18 @@ def main():
             nowTime = now.strftime("%H:%M:%S")
 
             values = []
-            if (voltageService != None):
-                values = voltageService.getValues()
-                for value in values:
-                    row = (lastRowId + 1, sensorId, nowDate, nowTime, nowDateTime,
-                           value)
-                    lastRowId = insertRow(mydb, row)
-                    sensorId = sensorId + 1
+            try:
+                if (voltageService != None):
+                    values = voltageService.getValues()
+                    for value in values:
+                        row = (lastRowId + 1, sensorId, nowDate, nowTime, nowDateTime,
+                               value)
+                        lastRowId = insertRow(mydb, row)
+                        sensorId = sensorId + 1
+            except:
+                except Error as e:
+                    logging.exception("Exception occurred")
+                    logging.error("Unable to read voltage")
 
             # commit the DB write
             mydb.commit()
