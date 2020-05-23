@@ -151,13 +151,13 @@ def main():
 
         try:
             temperatureService = TemperatureService()
-            lcd.text("Temp Service Created", LCD.LCD_LINE_2)
+            lcd.text("Temp Svc Created", LCD.LCD_LINE_2)
             time.sleep(3)
 
         except Error as e:
             logging.exception("Exception occurred")
             logging.error("Unable to create temperature service")
-            lcd.text("Temp Service Failed", LCD.LCD_LINE_2)
+            lcd.text("Temp Svc Failed", LCD.LCD_LINE_2)
             time.sleep(3)
 
         # create a voltage service instance
@@ -165,13 +165,13 @@ def main():
 
         try:
             voltageService = ADCService()
-            lcd.text("ADC Service Created", LCD.LCD_LINE_1)
+            lcd.text("ADC Svc Created", LCD.LCD_LINE_1)
             time.sleep(3)
 
         except Exception as e:
             logging.exception("Exception occurred")
             logging.error("Unable to create ADC service")
-            lcd.text("ADC Service Failed", LCD.LCD_LINE_1)
+            lcd.text("ADC Svc Failed", LCD.LCD_LINE_1)
             time.sleep(3)
 
         # keep running until ctrl+C
