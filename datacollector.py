@@ -186,6 +186,7 @@ def main():
             logging.exception("Exception occurred")
             logging.error("Unable to get Tinker Plate")
             lcd.text("TinkerPlate Failed", LCD.LCD_LINE_1)
+            tinkerplate = None
 
             # keep running until ctrl+C
         while True:
