@@ -217,7 +217,7 @@ def main():
                         sensorId = sensorId + 1
                         rowcount = rowcount + 1
 
-                except Error as e:
+                except Exception as e:
                     logging.exception("Exception occurred")
                     logging.error("Unable to read temperature")
 
@@ -251,7 +251,7 @@ def main():
                         sensorId = sensorId + 1
                         rowcount = rowcount + 1
 
-            except Error as e:
+            except Exception as e:
                 logging.exception("Exception occurred")
                 logging.error("Unable to read voltage")
 
@@ -269,12 +269,16 @@ def main():
                         rowcount = rowcount + 1
                         channelid = channelid + 1
 
-            except Error as e:
+            except Exception as e:
                 logging.exception("Exception occurred")
                 logging.error("Unable to read from TinkerPlate")
 
-            # commit the DB write
-            mydb.commit()
+            try:
+                # commit the DB write
+                mydb.commit()
+
+            except Exception as e:
+                logging.exception("Exception occurred while trying to commit to DB")
 
             # build LCD display strings
             lcdstr2 = localipaddress
