@@ -263,7 +263,7 @@ def main():
                     values = tinkerplate.getADCall(0)
                     for value in values:
                         row = (lastRowId + 1, sensorId, nowDate, nowTime, nowDateTime,
-                               value * voltagefactor[channelid - 1])
+                               value * voltagefactors[channelid - 1])
                         lastRowId = insertRow(mydb, row)
                         sensorId = sensorId + 1
                         rowcount = rowcount + 1
