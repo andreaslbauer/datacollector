@@ -259,11 +259,11 @@ def main():
             try:
                 if (tinkerplate != None):
                     channelid = 1
-                    voltagefactor = 1220 / 220
+                    voltagefactors = [1220 / 220, 1220 / 220, 1, 1]
                     values = tinkerplate.getADCall(0)
                     for value in values:
                         row = (lastRowId + 1, sensorId, nowDate, nowTime, nowDateTime,
-                               value * voltagefactor)
+                               value * voltagefactor[channelid - 1])
                         lastRowId = insertRow(mydb, row)
                         sensorId = sensorId + 1
                         rowcount = rowcount + 1
