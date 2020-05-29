@@ -259,7 +259,8 @@ def main():
             try:
                 if (tinkerplate != None):
                     channelid = 1
-                    voltagefactors = [1220 / 220, 1220 / 220, 1333, 1]
+                    #voltagefactors = [1220 / 220, 1220 / 220, 1333, 1]
+                    voltagefactors = [1220 / 220, 1220 / 220, 1, 1]
                     values = tinkerplate.getADCall(0)
                     for value in values:
                         row = (lastRowId + 1, sensorId, nowDate, nowTime, nowDateTime,
