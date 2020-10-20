@@ -66,8 +66,12 @@ class TempSensor:
 
         try:
             # read the sensor file
-            lines = self.tempFileRead()
-            print(lines)
+            lines = []
+            attempts = 0
+            while (len(lines) == 0) and attempts < 32
+                lines = self.tempFileRead()
+                attempts = attempts + 1
+                print(lines)
 
             if len(lines) > 0:
                 # wait until new data is available
