@@ -69,22 +69,23 @@ class TempSensor:
             lines = self.tempFileRead()
             print(lines)
 
-            # wait until new data is available
-            while lines[0].strip()[-3:] != 'YES':
-                time.sleep(0.2)
-                lines = self.tempFileRead()
+            if len(lines) > 0:
+                # wait until new data is available
+                while lines[0].strip()[-3:] != 'YES':
+                    time.sleep(0.2)
+                    lines = self.tempFileRead()
 
-            # get the relevant portion of the file content
-            temp_output = lines[1].find('t=')
+                # get the relevant portion of the file content
+                temp_output = lines[1].find('t=')
 
-            if temp_output != -1:
-                temp_string = lines[1].strip()[temp_output+2:]
-                temp_c = float(temp_string) / 1000.0
-                temp_f = temp_c * 9.0 / 5.0 + 32.0
-                self.value = temp_f
-                dateValue = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                self.lastRead = dateValue
-                return temp_f
+                if temp_output != -1:
+                    temp_string = lines[1].strip()[temp_output+2:]
+                    temp_c = float(temp_string) / 1000.0
+                    temp_f = temp_c * 9.0 / 5.0 + 32.0
+                    self.value = temp_f
+                    dateValue = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    self.lastRead = dateValue
+                    return temp_f
 
         except Exception as e:
             logging.exception("Exception occurred while reading temperature")
