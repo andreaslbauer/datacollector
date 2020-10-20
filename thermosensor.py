@@ -67,6 +67,7 @@ class TempSensor:
         try:
             # read the sensor file
             lines = self.tempFileRead()
+            print(lines)
 
             # wait until new data is available
             while lines[0].strip()[-3:] != 'YES':
