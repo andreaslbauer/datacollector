@@ -68,7 +68,7 @@ class TempSensor:
             # read the sensor file
             lines = []
             attempts = 0
-            while (len(lines) == 0) and attempts < 32
+            while (len(lines) == 0) and attempts < 32:
                 lines = self.tempFileRead()
                 attempts = attempts + 1
                 print(lines)
