@@ -119,6 +119,7 @@ class TemperatureService:
     # initialize to access the sensors and discover them al
     def discoverSensors(self):
 
+        count = 0
         try:
         
             # load kernel modules
@@ -127,14 +128,16 @@ class TemperatureService:
 
             # get the contents of the bus directory.  listdir will give us a list of all sensor file names.
             sensorFileNames = os.listdir(devicePath);
-            count = 1
+
             for sensorFileName in sensorFileNames:
 
                 # our sensor has the prefix "28-"
                 if '28-' in sensorFileName:
+                    count += 1
+
                     fullPath = devicePath + sensorFileName + '/w1_slave'
                     newNiceName = 'Sensor ' + str(count)
-                    count += 1
+
                     newSensor = TempSensor(sensorFileName, fullPath, newNiceName)
                     sensors.append(newSensor)
 
@@ -143,6 +146,8 @@ class TemperatureService:
         except Exception as e:
             logging.exception("Exception occurred while initializing sensor")
             logging.error(e)
+
+        logging.info("Detected %d DS18B20 temperature sensors", count)
             
     # read the sensors
 

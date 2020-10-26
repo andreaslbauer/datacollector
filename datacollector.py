@@ -6,6 +6,11 @@
 # logging facility: https://realpython.com/python-logging/
 import logging
 
+
+# set up the logger
+logging.basicConfig(filename="/tmp/datacollector.log", format='%(asctime)s %(levelname)s %(message)s',
+                    level=logging.INFO)
+
 # sqlite3 access API
 import sqlite3
 from sqlite3 import Error
@@ -18,7 +23,12 @@ from thermosensor import TemperatureService
 from adc import ADCService
 from lcd1602 import LCD
 import relaiscontrol
-import piplates.TINKERplate as tink
+
+try:
+    import piplates.TINKERplate as tink
+
+except Exception as e:
+    logging.error("Unable to import piplates modules")
 
 # dbfilename = "/tmp/data.db"
 dbfilename = "/home/pi/pimon/data.db"
@@ -53,6 +63,7 @@ def createTable(mydb, createTableSql):
         cursor = mydb.cursor()
         cursor.execute(createTableSql)
         logging.info("Created table %s", createTableSql)
+
     except Error as e:
         logging.exception("Exception occurred")
         logging.error("Unable to create table %s", createTableSql)
@@ -95,9 +106,6 @@ def countRows(mydb):
         return 0
 
 
-# set up the logger
-logging.basicConfig(filename="/tmp/datacollector.log", format='%(asctime)s %(levelname)s %(message)s',
-                    level=logging.INFO)
 
 
 def main():
@@ -188,8 +196,15 @@ def main():
             lcd.text("TinkerPlate Failed", LCD.LCD_LINE_1)
             tinkerplate = None
 
-            # keep running until ctrl+C
+        # counter for measurement iterations
+        iteration = 1
+
+        # keep running until ctrl+C
         while True:
+
+            # increase iteration count
+            iteration = iteration + 1
+            logging.info("Data collection iteration: %d", iteration)
 
             # toggle LED to indicate action
             if tinkerplate != None:
@@ -307,7 +322,7 @@ def main():
 
         mydb.close()
 
-        time.sleep(3)
+        logging.info("Data Collector main loop has terminated, database is closed")
 
 
 if __name__ == '__main__':

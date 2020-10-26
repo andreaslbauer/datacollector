@@ -1,11 +1,13 @@
-import board
-import busio
 import logging
 
+try:
+    import board
+    import busio
+    import adafruit_ads1x15.ads1115 as ADS
+    from adafruit_ads1x15.analog_in import AnalogIn
 
-import adafruit_ads1x15.ads1115 as ADS
-from adafruit_ads1x15.analog_in import AnalogIn
-
+except Exception as e:
+    logging.error("Unable to import Adafruit modules")
 
 #
 # class to implement service that manages all sensors
@@ -37,8 +39,7 @@ class ADCService:
                         AnalogIn(ads2, ADS.P2, ADS.P3)]
 
         except Exception as e:
-            logging.exception("Exception occurred")
-            logging.error("Unable to get ADC")
+            logging.exception("Exception occurred - unable to get ADC")
 
     # get the measured values
     def getValues(self):
