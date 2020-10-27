@@ -31,7 +31,7 @@ except Exception as e:
     logging.error("Unable to import piplates modules")
 
 # dbfilename = "/tmp/data.db"
-dbfilename = "/home/pi/data.db"
+dbfilename = "/home/pi/pimon/data.db"
 lastRowId = 1
 timeBetweenSensorReads = 12
 
