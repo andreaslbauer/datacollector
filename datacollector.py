@@ -6,7 +6,6 @@
 # logging facility: https://realpython.com/python-logging/
 import logging
 
-
 # set up the logger
 logging.basicConfig(filename="/tmp/datacollector.log", format='%(asctime)s %(levelname)s %(message)s',
                     level=logging.INFO)
