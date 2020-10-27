@@ -22,7 +22,6 @@ import logging
 
 # path for devices on W1 on the system bus
 devicePath = '/sys/bus/w1/devices/'
-sensors = []
 
 # start id value.  The ID count is incremented for each data record sent to the web service
 idCount = 100
@@ -113,7 +112,7 @@ class TemperatureService:
 
     # print instance data.  Used for debugging and diagnosis purposes
     def dump(self):
-        for sensor in sensors:
+        for sensor in self.sensors:
             sensor.dump()
 
     # initialize to access the sensors and discover them al
@@ -139,7 +138,7 @@ class TemperatureService:
                     newNiceName = 'Sensor ' + str(count)
 
                     newSensor = TempSensor(sensorFileName, fullPath, newNiceName)
-                    sensors.append(newSensor)
+                    self.sensors.append(newSensor)
 
                     logging.info("Discovered temperature sensor %s", fullPath)
 
@@ -152,14 +151,14 @@ class TemperatureService:
     # read the sensors
 
     def readSensors(self):
-        for sensor in sensors:
+        for sensor in self.sensors:
             sensor.read()
 
 
     # get the measured values
     def getValues(self):
         values = [];
-        for sensor in sensors:
+        for sensor in self.sensors:
             values.append(sensor.value)
 
         return values

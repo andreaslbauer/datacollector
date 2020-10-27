@@ -21,8 +21,8 @@ from requests import get
 import datetime
 from thermosensor import TemperatureService
 from adc import ADCService
-from lcd1602 import LCD
 import relaiscontrol
+from einkdisplay import eink
 
 try:
     import piplates.TINKERplate as tink
@@ -31,11 +31,9 @@ except Exception as e:
     logging.error("Unable to import piplates modules")
 
 # dbfilename = "/tmp/data.db"
-dbfilename = "/home/pi/pimon/data.db"
+dbfilename = "/home/pi/data.db"
 lastRowId = 1
 timeBetweenSensorReads = 12
-lcd = LCD()
-
 
 # create connection to our db
 def createConnection(dbFileName):
@@ -106,8 +104,6 @@ def countRows(mydb):
         return 0
 
 
-
-
 def main():
     # log start up message
     logging.info("***************************************************************")
@@ -115,7 +111,6 @@ def main():
     logging.info("Running %s", __file__)
     logging.info("Working directory is %s", os.getcwd())
     logging.info("SQLITE Database file is %s", dbfilename);
-    lcd.text("Data Collector", LCD.LCD_LINE_1)
 
     localipaddress = "IP: Unknown"
     try:
@@ -126,7 +121,6 @@ def main():
         localipaddress = s.getsockname()[0]
         logging.info("Hostname is %s", hostname)
         logging.info("Local IP is %s and external IP is %s", localipaddress, externalip)
-        lcd.text(localipaddress, LCD.LCD_LINE_2)
 
     except Exception as e:
         logging.exception("Exception occurred")
@@ -160,61 +154,62 @@ def main():
 
         try:
             temperatureService = TemperatureService()
-            lcd.text("Temp Service Created", LCD.LCD_LINE_2)
-            time.sleep(3)
 
         except Error as e:
-            logging.exception("Exception occurred")
             logging.error("Unable to create temperature service")
-            lcd.text("Temp Service Failed", LCD.LCD_LINE_2)
-            time.sleep(3)
+
 
         # create a voltage service instance
         voltageService = None
 
         try:
             voltageService = ADCService()
-            lcd.text("ADC Service Created", LCD.LCD_LINE_1)
 
         except Exception as e:
-            logging.exception("Exception occurred")
             logging.error("Unable to create ADC service")
-            lcd.text("ADC Service Failed", LCD.LCD_LINE_1)
 
-            # try to access TinkerPlate
+        # try to access TinkerPlate
         tinkerplate = None
 
         try:
             tinkerplate = tink
             tinkerplate.setDEFAULTS(0)
             logging.info("TinkerPlate found")
-            lcd.text("TinkerPlate Created", LCD.LCD_LINE_1)
 
         except Exception as e:
             logging.exception("Exception occurred")
             logging.error("Unable to get Tinker Plate")
-            lcd.text("TinkerPlate Failed", LCD.LCD_LINE_1)
             tinkerplate = None
 
         # counter for measurement iterations
         iteration = 1
+
+        einkDisplay = eink()
+        einkDisplay.initDisplay()
+
+        data = []
+        if temperatureService != None:
+            for sensor in temperatureService.sensors:
+                data.append([])
 
         # keep running until ctrl+C
         while True:
 
             # increase iteration count
             iteration = iteration + 1
-            logging.info("Data collection iteration: %d", iteration)
 
             # toggle LED to indicate action
             if tinkerplate != None:
                 try:
                     tink.setLED(0, 0)
+
                 except Exception as e:
                     pass
 
             # read temperature values
+            dataSetIndex = 0
             if (temperatureService != None):
+                tempsString = ""
                 temperatureService.readSensors()
                 now = datetime.datetime.now()
                 nowDateTime = str(now)
@@ -229,12 +224,21 @@ def main():
                         row = (lastRowId + 1, sensorId, nowDate, nowTime, nowDateTime,
                                value)
                         lastRowId = insertRow(mydb, row)
-                        sensorId = sensorId + 1
                         rowcount = rowcount + 1
+                        tempsString = tempsString + str(value) + " "
+                        data[sensorId - 1].append(value)
+
+                        # keep length of items to show in chart to less than 120
+                        while (len(data[sensorId - 1]) > 120):
+                            data[sensorId - 1].pop(0)
+
+                        sensorId = sensorId + 1
 
                 except Exception as e:
-                    logging.exception("Exception occurred")
                     logging.error("Unable to read temperature")
+
+                logging.info("Iteration: %d Temperature data: %s", iteration, tempsString)
+                einkDisplay.displayTemps(values, data)
 
             # toggle LED to indicate action
             if tinkerplate != None:
@@ -242,12 +246,6 @@ def main():
                     tink.clrLED(0, 0)
                 except Exception as e:
                     pass
-
-            # write to LCD
-            lcd.text("At: " + nowTime, LCD.LCD_LINE_1)
-            lcdstr1 = "T: "
-            for value in values:
-                lcdstr1 = lcdstr1 + "{:.2f}".format(value) + " "
 
             # readvoltage values
             now = datetime.datetime.now()
@@ -267,7 +265,6 @@ def main():
                         rowcount = rowcount + 1
 
             except Exception as e:
-                logging.exception("Exception occurred")
                 logging.error("Unable to read voltage")
 
             # read voltage values from TinkerPlate
@@ -286,7 +283,6 @@ def main():
                         channelid = channelid + 1
 
             except Exception as e:
-                logging.exception("Exception occurred")
                 logging.error("Unable to read from TinkerPlate")
 
             try:
@@ -296,31 +292,12 @@ def main():
             except Exception as e:
                 logging.exception("Exception occurred while trying to commit to DB")
 
-            # build LCD display strings
-            lcdstr2 = localipaddress
-            lcdstr3 = lcdstr1
-            try:
-                if (len(values) > 1):
-                    lcdstr2 = "{:.2f}V".format(values[0]) + " {:.2f}V".format(values[1])
 
-                if (len(values) > 3):
-                    lcdstr3 = "{:.2f}A".format(values[2]) + " {:.2f}A".format(values[3])
-
-            except Exception as e:
-                logging.exception("Exception while building LCD display strings")
-
-            lcd.text(lcdstr1, LCD.LCD_LINE_2)
-            time.sleep(timeBetweenSensorReads / 4)
-            lcd.text(lcdstr1, LCD.LCD_LINE_1)
-            lcd.text(lcdstr2, LCD.LCD_LINE_2)
-            time.sleep(timeBetweenSensorReads / 4)
-            lcd.text(lcdstr2, LCD.LCD_LINE_1)
-            lcd.text(lcdstr3, LCD.LCD_LINE_2)
-            time.sleep(timeBetweenSensorReads / 4)
-            lcd.text(localipaddress, LCD.LCD_LINE_1)
-            lcd.text("Rows:" + str(rowcount), LCD.LCD_LINE_2)
+            time.sleep(7)
 
         mydb.close()
+
+        einkDisplay.turnOff()
 
         logging.info("Data Collector main loop has terminated, database is closed")
 
@@ -334,6 +311,5 @@ if __name__ == '__main__':
     except Exception as e:
         logging.exception("Exception occurred in main")
 
-    lcd.text("Data Coll Exit", LCD.LCD_LINE_1)
     logging.info("Data Collector has terminated")
 
