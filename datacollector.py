@@ -302,7 +302,6 @@ def main():
             except Exception as e:
                 logging.exception("Exception occurred while trying to commit to DB")
 
-
             time.sleep(7)
 
         mydb.close()
