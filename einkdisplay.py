@@ -55,7 +55,7 @@ class eink:
             self.canvas = Canvas(self.root, width = self.width, height = self.height)
             self.canvas.pack()
 
-        except Execption as e:
+        except Exception as e:
             logging.error("Unable to get window")
 
         try:
