@@ -246,7 +246,7 @@ def main():
                 except Exception as e:
                     logging.error("Unable to read temperature")
 
-                logging.info("Iteration: %d Temperature data: %s", iteration, tempsString)
+                #logging.info("Iteration: %d Temperature data: %s", iteration, tempsString)
                 if einkDisplay != None:
                     einkDisplay.displayTemps(values, data)
 
