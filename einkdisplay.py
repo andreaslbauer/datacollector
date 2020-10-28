@@ -48,10 +48,15 @@ class eink:
         self.height = self.epd.width
 
         # set up window for display
-        self.root = tk.Tk()
-        self.root.geometry('%dx%d' % (self.width, self.height))
-        self.canvas = Canvas(self.root, width = self.width, height = self.height)
-        self.canvas.pack()
+
+        try:
+            self.root = tk.Tk()
+            self.root.geometry('%dx%d' % (self.width, self.height))
+            self.canvas = Canvas(self.root, width = self.width, height = self.height)
+            self.canvas.pack()
+
+        except Execption as e:
+            logging.error("Unable to get window")
 
         try:
             logging.info("Initalize E-Ink display")
@@ -141,11 +146,11 @@ class eink:
                 self.epd.Clear(255)
                 self.iteration = 0
 
-            photo = ImageTk.PhotoImage(blackimage)
-            self.canvas.create_image(0, 0, image=photo, anchor="nw")
-            self.canvas.pack()
-            self.canvas.update_idletasks()
-            # epd.display(epd.getbuffer(blackimage), epd.getbuffer(redimage))
+            if (self.canvas != None):
+                photo = ImageTk.PhotoImage(blackimage)
+                self.canvas.create_image(0, 0, image=photo, anchor="nw")
+                self.canvas.pack()
+                self.canvas.update_idletasks()
 
             if self.displayepd:
                 self.epd.display(self.epd.getbuffer(blackimage))
