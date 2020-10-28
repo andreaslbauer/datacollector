@@ -21,7 +21,12 @@ import datetime
 from thermosensor import TemperatureService
 from adc import ADCService
 import relaiscontrol
-from einkdisplay import eink
+
+try:
+    from einkdisplay import eink
+
+except Exception as e:
+    logging.error("Unable to import Waveshare eink modules")
 
 try:
     import piplates.TINKERplate as tink
@@ -176,15 +181,20 @@ def main():
             logging.info("TinkerPlate found")
 
         except Exception as e:
-            logging.exception("Exception occurred")
             logging.error("Unable to get Tinker Plate")
             tinkerplate = None
 
         # counter for measurement iterations
         iteration = 1
 
-        einkDisplay = eink()
-        einkDisplay.initDisplay()
+        # initialize eink display, if present
+        einkDisplay = None
+        try:
+            einkDisplay = eink()
+            einkDisplay.initDisplay()
+
+        except Exception as e:
+            logging.error("Unable to get eink display")
 
         data = []
         if temperatureService != None:
@@ -237,7 +247,8 @@ def main():
                     logging.error("Unable to read temperature")
 
                 logging.info("Iteration: %d Temperature data: %s", iteration, tempsString)
-                einkDisplay.displayTemps(values, data)
+                if einkDisplay != None:
+                    einkDisplay.displayTemps(values, data)
 
             # toggle LED to indicate action
             if tinkerplate != None:
@@ -296,7 +307,8 @@ def main():
 
         mydb.close()
 
-        einkDisplay.turnOff()
+        if einkDisplay != None:
+            einkDisplay.turnOff()
 
         logging.info("Data Collector main loop has terminated, database is closed")
 
