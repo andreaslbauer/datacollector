@@ -311,7 +311,7 @@ def main():
 
         logging.info("Data Collector main loop has terminated, database is closed")
 
-
+# main program
 if __name__ == '__main__':
 
     try:
