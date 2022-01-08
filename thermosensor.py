@@ -22,7 +22,6 @@ import logging
 
 # path for devices on W1 on the system bus
 devicePath = '/sys/bus/w1/devices/'
-sensors = []
 
 # start id value.  The ID count is incremented for each data record sent to the web service
 idCount = 100
@@ -113,12 +112,13 @@ class TemperatureService:
 
     # print instance data.  Used for debugging and diagnosis purposes
     def dump(self):
-        for sensor in sensors:
+        for sensor in self.sensors:
             sensor.dump()
 
     # initialize to access the sensors and discover them al
     def discoverSensors(self):
 
+        count = 0
         try:
         
             # load kernel modules
@@ -127,34 +127,38 @@ class TemperatureService:
 
             # get the contents of the bus directory.  listdir will give us a list of all sensor file names.
             sensorFileNames = os.listdir(devicePath);
-            count = 1
+
             for sensorFileName in sensorFileNames:
 
                 # our sensor has the prefix "28-"
                 if '28-' in sensorFileName:
+                    count += 1
+
                     fullPath = devicePath + sensorFileName + '/w1_slave'
                     newNiceName = 'Sensor ' + str(count)
-                    count += 1
+
                     newSensor = TempSensor(sensorFileName, fullPath, newNiceName)
-                    sensors.append(newSensor)
+                    self.sensors.append(newSensor)
 
                     logging.info("Discovered temperature sensor %s", fullPath)
 
         except Exception as e:
             logging.exception("Exception occurred while initializing sensor")
             logging.error(e)
+
+        logging.info("Detected %d DS18B20 temperature sensors", count)
             
     # read the sensors
 
     def readSensors(self):
-        for sensor in sensors:
+        for sensor in self.sensors:
             sensor.read()
 
 
     # get the measured values
     def getValues(self):
         values = [];
-        for sensor in sensors:
+        for sensor in self.sensors:
             values.append(sensor.value)
 
         return values
