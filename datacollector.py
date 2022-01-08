@@ -23,7 +23,7 @@ import piplates.TINKERplate as tink
 # dbfilename = "/tmp/data.db"
 dbfilename = "/home/pi/pimon/data.db"
 lastRowId = 1
-timeBetweenSensorReads = 12
+timeBetweenSensorReads = 5
 lcd = LCD()
 
 
