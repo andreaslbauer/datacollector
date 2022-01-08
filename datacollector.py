@@ -37,7 +37,7 @@ except Exception as e:
 # dbfilename = "/tmp/data.db"
 dbfilename = "/home/pi/pimon/data.db"
 lastRowId = 1
-timeBetweenSensorReads = 12
+timeBetweenSensorReads = 5
 
 # create connection to our db
 def createConnection(dbFileName):
