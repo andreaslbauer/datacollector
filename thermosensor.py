@@ -115,6 +115,10 @@ class TemperatureService:
         for sensor in self.sensors:
             sensor.dump()
 
+    # get the number of sensors
+    def numberOfSensors(self):
+        return len(sensors)
+
     # initialize to access the sensors and discover them al
     def discoverSensors(self):
 
@@ -149,11 +153,9 @@ class TemperatureService:
         logging.info("Detected %d DS18B20 temperature sensors", count)
             
     # read the sensors
-
     def readSensors(self):
         for sensor in self.sensors:
             sensor.read()
-
 
     # get the measured values
     def getValues(self):

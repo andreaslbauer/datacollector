@@ -20,7 +20,11 @@ from requests import get
 import datetime
 from thermosensor import TemperatureService
 from adc import ADCService
-import relaiscontrol
+
+try:
+    import relaiscontrol
+except BaseException as e:
+    logging.error("Unable to import relais control - not running on Raspberry PI?")
 
 try:
     from einkdisplay import eink
@@ -38,6 +42,7 @@ except Exception as e:
 dbfilename = "/home/pi/pimon/data.db"
 lastRowId = 1
 timeBetweenSensorReads = 5
+numberOfSensors = 0
 
 # create connection to our db
 def createConnection(dbFileName):
@@ -162,7 +167,6 @@ def main():
         except Error as e:
             logging.error("Unable to create temperature service")
 
-
         # create a voltage service instance
         voltageService = None
 
@@ -203,7 +207,6 @@ def main():
 
         # keep running until ctrl+C
         while True:
-
             # increase iteration count
             iteration = iteration + 1
 
@@ -226,7 +229,6 @@ def main():
                 nowTime = now.strftime("%H:%M:%S")
 
                 try:
-
                     values = temperatureService.getValues()
                     sensorId = 1
                     for value in values:
