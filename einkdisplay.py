@@ -74,6 +74,7 @@ class eink:
             font24 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 24)
             font10 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 10)
             font22 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 22)
+            font28 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 28)
             font64 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 64)
             font128 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 128)
 
@@ -103,11 +104,11 @@ class eink:
                     if maxTemp < dataitem:
                         maxTemp = dataitem
 
-            draw.text((10, 28), text, font=font22, fill=0)
+            draw.text((10, 28), text, font=font28, fill=0)
             draw.line((0, 60, self.width, 60), width = 2, fill = 0)
 
             # draw charts
-            draw.line((5, 72 + 95, self.width - 5, 72 + 95), width = 0, fill = 0)
+            draw.line((5, 72 + 98, self.width - 5, 72 + 98), width = 0, fill = 0)
             draw.line((5, 72, 5, 72 + 95), fill = 0)
 
             datasetIndex = 0
