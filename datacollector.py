@@ -50,20 +50,23 @@ def createConnection(dbFileName):
 
 
 # create database table
-def createTable(mydb, createTableSql):
-    """ create a table from the create_table_sql statement
-    :param conn: Connection object
-    :param createTableSql: a CREATE TABLE statement
-    :return:
-    """
+def createTable(mydb):
+    createTableSQL = """CREATE TABLE IF NOT EXISTS datapoints (
+                                            id integer PRIMARY KEY,
+                                            sensorid integer,
+                                            date text,
+                                            time text,
+                                            isodatetime text,
+                                            value real
+                                        ); """
     try:
         cursor = mydb.cursor()
-        cursor.execute(createTableSql)
-        logging.info("Created table %s", createTableSql)
+        cursor.execute(createTableSQL)
+        logging.info("Created table %s", createTableSQL)
 
     except Error as e:
         logging.exception("Exception occurred")
-        logging.error("Unable to create table %s", createTableSql)
+        logging.error("Unable to create table %s", createTableSQL)
 
 
 # insert a record
@@ -132,15 +135,7 @@ def main():
 
     if mydb is not None:
         # create table
-        createTableSQL = """CREATE TABLE IF NOT EXISTS datapoints (
-                                                    id integer PRIMARY KEY,
-                                                    sensorid integer,
-                                                    date text,
-                                                    time text,
-                                                    isodatetime text,
-                                                    value real
-                                                ); """
-        createTable(mydb, createTableSQL)
+        createTable(mydb)
         mydb.commit()
 
         # insert some values
@@ -234,7 +229,19 @@ def main():
                         sensorId = sensorId + 1
 
                 except Exception as e:
-                    logging.error("Unable to read temperature")
+                    logging.error("Unable to read values and to add data to database")
+                    logging.info("Try to recreate DB file")
+
+                    mydb.close()
+                    # create table
+                    mydb = createConnection(dbfilename)
+                    createTable(mydb)
+                    mydb.commit()
+
+                    # get the last row id
+                    lastRowId = countRows(mydb)
+                    logging.info("Data points in table: %d", lastRowId)
+                    rowcount = lastRowId
 
                 logging.info("Iteration: %d Temperature data: %s", iteration, tempsString)
                 einkDisplay.displayTemps(values, data)
@@ -284,13 +291,13 @@ def main():
             except Exception as e:
                 logging.error("Unable to read from TinkerPlate")
 
+
             try:
                 # commit the DB write
                 mydb.commit()
 
             except Exception as e:
                 logging.exception("Exception occurred while trying to commit to DB")
-
 
             time.sleep(7)
 
