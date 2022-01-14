@@ -20,8 +20,17 @@ from requests import get
 import datetime
 from thermosensor import TemperatureService
 from adc import ADCService
-import relaiscontrol
-from einkdisplay import eink
+
+try:
+    import relaiscontrol
+except BaseException as e:
+    logging.error("Unable to import relais control - not running on Raspberry PI?")
+
+try:
+    from einkdisplay import eink
+
+except Exception as e:
+    logging.error("Unable to import Waveshare eink modules")
 
 try:
     import piplates.TINKERplate as tink
@@ -32,7 +41,8 @@ except Exception as e:
 # dbfilename = "/tmp/data.db"
 dbfilename = "/home/pi/pimon/data.db"
 lastRowId = 1
-timeBetweenSensorReads = 12
+timeBetweenSensorReads = 5
+numberOfSensors = 0
 
 # create connection to our db
 def createConnection(dbFileName):
@@ -152,7 +162,6 @@ def main():
         except Error as e:
             logging.error("Unable to create temperature service")
 
-
         # create a voltage service instance
         voltageService = None
 
@@ -171,15 +180,20 @@ def main():
             logging.info("TinkerPlate found")
 
         except Exception as e:
-            logging.exception("Exception occurred")
             logging.error("Unable to get Tinker Plate")
             tinkerplate = None
 
         # counter for measurement iterations
         iteration = 1
 
-        einkDisplay = eink()
-        einkDisplay.initDisplay()
+        # initialize eink display, if present
+        einkDisplay = None
+        try:
+            einkDisplay = eink()
+            einkDisplay.initDisplay()
+
+        except Exception as e:
+            logging.error("Unable to get eink display")
 
         data = []
         if temperatureService != None:
@@ -188,7 +202,6 @@ def main():
 
         # keep running until ctrl+C
         while True:
-
             # increase iteration count
             iteration = iteration + 1
 
@@ -211,7 +224,6 @@ def main():
                 nowTime = now.strftime("%H:%M:%S")
 
                 try:
-
                     values = temperatureService.getValues()
                     sensorId = 1
                     for value in values:
@@ -243,8 +255,9 @@ def main():
                     logging.info("Data points in table: %d", lastRowId)
                     rowcount = lastRowId
 
-                logging.info("Iteration: %d Temperature data: %s", iteration, tempsString)
-                einkDisplay.displayTemps(values, data)
+                #logging.info("Iteration: %d Temperature data: %s", iteration, tempsString)
+                if einkDisplay != None:
+                    einkDisplay.displayTemps(values, data)
 
             # toggle LED to indicate action
             if tinkerplate != None:
@@ -303,11 +316,12 @@ def main():
 
         mydb.close()
 
-        einkDisplay.turnOff()
+        if einkDisplay != None:
+            einkDisplay.turnOff()
 
         logging.info("Data Collector main loop has terminated, database is closed")
 
-
+# main program
 if __name__ == '__main__':
 
     try:
