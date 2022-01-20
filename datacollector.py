@@ -26,11 +26,8 @@ try:
 except BaseException as e:
     logging.error("Unable to import relais control - not running on Raspberry PI?")
 
-try:
-    from einkdisplay import eink
-
 except Exception as e:
-    logging.error("Unable to import Waveshare eink modules")
+   logging.error("Unable to import Waveshare eink modules")
 
 try:
     import piplates.TINKERplate as tink
@@ -186,20 +183,6 @@ def main():
         # counter for measurement iterations
         iteration = 1
 
-        # initialize eink display, if present
-        einkDisplay = None
-        try:
-            einkDisplay = eink()
-            einkDisplay.initDisplay()
-
-        except Exception as e:
-            logging.error("Unable to get eink display")
-
-        data = []
-        if temperatureService != None:
-            for sensor in temperatureService.sensors:
-                data.append([])
-
         # keep running until ctrl+C
         while True:
             # increase iteration count
@@ -232,11 +215,6 @@ def main():
                         lastRowId = insertRow(mydb, row)
                         rowcount = rowcount + 1
                         tempsString = tempsString + str(value) + " "
-                        data[sensorId - 1].append(value)
-
-                        # keep length of items to show in chart to less than 120
-                        while (len(data[sensorId - 1]) > 120):
-                            data[sensorId - 1].pop(0)
 
                         sensorId = sensorId + 1
 
@@ -255,9 +233,6 @@ def main():
                     logging.info("Data points in table: %d", lastRowId)
                     rowcount = lastRowId
 
-                #logging.info("Iteration: %d Temperature data: %s", iteration, tempsString)
-                if einkDisplay != None:
-                    einkDisplay.displayTemps(values, data)
 
             # toggle LED to indicate action
             if tinkerplate != None:
